@@ -1,0 +1,106 @@
+\documentclass{article}
+
+% For pulling in the contents of files:
+\usepackage{catchfile}
+
+% Counters to track the scores:
+\count0=0 % part 1 score
+\count1=0 % part 2 score
+
+% Tokens to expand into the possible combinations, used in matching with \ifx:
+\def\pAX{AX}
+\def\pAY{AY}
+\def\pAZ{AZ}
+\def\pBX{BX}
+\def\pBY{BY}
+\def\pBZ{BZ}
+\def\pCX{CX}
+\def\pCY{CY}
+\def\pCZ{CZ}
+
+
+% Compute scores for a match in Part 1:
+\long\def\addscoreONE#1#2{%
+  \def\tmp{#1#2}%
+  % A and X mean rock
+  % B and Y mean paper
+  % C and Z mean scissors
+  % Opponent plays rock
+  \ifx\tmp\pAX\advance\count0 4\fi% you draw: 3+1
+  \ifx\tmp\pAY\advance\count0 8\fi% you win:  6+2
+  \ifx\tmp\pAZ\advance\count0 3\fi% you lose: 0+3
+  % Opponent plays paper
+  \ifx\tmp\pBX\advance\count0 1\fi% you lose: 0+1
+  \ifx\tmp\pBY\advance\count0 5\fi% you draw: 3+2
+  \ifx\tmp\pBZ\advance\count0 9\fi% you win:  6+3
+  % Opponent plays scissors
+  \ifx\tmp\pCX\advance\count0 7\fi% you win:  6+1
+  \ifx\tmp\pCY\advance\count0 2\fi% you lose: 0+2
+  \ifx\tmp\pCZ\advance\count0 6\fi% you draw: 3+3
+}%
+
+
+% Compute scores for a match in Part 2:
+\long\def\addscoreTWO#1#2{%
+  \def\tmp{#1#2}%
+  % X means you must choose to lose
+  % Y means you must choose to draw
+  % Z means you must choose to win
+  % Opponent plays rock
+  \ifx\tmp\pAX\advance\count1 3\fi% you lose; choose scissors: 0+3
+  \ifx\tmp\pAY\advance\count1 4\fi% you draw; choose rock:     3+1
+  \ifx\tmp\pAZ\advance\count1 8\fi% you win;  choose paper:    6+2
+  % Opponent plays paper
+  \ifx\tmp\pBX\advance\count1 1\fi% you lose; choose rock:     0+1
+  \ifx\tmp\pBY\advance\count1 5\fi% you draw; choose paper:    3+2
+  \ifx\tmp\pBZ\advance\count1 9\fi% you win;  choose scissors: 6+3
+  % Opponent plays scissors
+  \ifx\tmp\pCX\advance\count1 2\fi% you lose; choose paper:    0+2
+  \ifx\tmp\pCY\advance\count1 6\fi% you draw; choose scissors: 3+3
+  \ifx\tmp\pCZ\advance\count1 7\fi% you win;  choose rock:     6+1
+}%
+
+
+
+% A marker for the end of the loop:
+\def\scoreloopEND{END}
+
+
+% A tail-recursive loop to gobble up all the matches and compute scores:
+\long\def\scorelooper#1#2{%
+  \def\opponent{#1}%
+  \def\yourplay{#2}%
+  %
+  \ifx\opponent\scoreloopEND%
+     \let\next=\relax%
+  \else
+     \addscoreONE#1#2%
+     \addscoreTWO#1#2%
+     \let\next=\scorelooper%
+  \fi
+  \next
+}%
+
+
+% Set up the loop to count through all the scores:
+\def\countscores#1{%
+ \expandafter\scorelooper#1{}{END}{END}
+}%
+
+\begin{document}
+
+
+% Capture the input file as a variable:
+\CatchFileDef{\matches}{input.txt}{}
+
+% Input
+\countscores{\matches}
+
+
+% Include the final tallys for Part 1 and Part 2:
+Part 1 score: \the\count0
+
+Part 2 score: \the\count1
+
+
+\end{document}
