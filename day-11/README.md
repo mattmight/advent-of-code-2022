@@ -9,7 +9,7 @@ I installed it with homebrew on macOS, so it directly references that installati
 
 To get the answer for Part 1, run:
 
-`make part`
+`make part1`
 
 
 ## Part 2
