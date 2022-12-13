@@ -1,0 +1,5 @@
+
+
+
+run:
+	nodejs listcomp.js
