@@ -1,0 +1,4 @@
+
+
+run:
+	php voxel.php
