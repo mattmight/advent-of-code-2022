@@ -1,0 +1,86 @@
+
+/* The current value of humn: */
+x = 0 ;
+
+/* Checks if two values are both positive or both negative */
+define same_polarity(x,y) {
+  if (x == 0) return 0 ;
+  if (y == 0) return 0 ;
+  if (x > 0) return y > 0 ;
+  if (x < 0) return y < 0;
+}
+
+
+/* Performs a binary search to identify when root is zero: */
+define solve() {
+
+  curr = root(x)  ;
+
+  while (curr) {
+    print x;
+    print "\n";
+    right = root(x+1) ;
+    left  = root(x-1) ;
+
+    print "x: ", x, "; curr: ", curr, "; left: ", left, "; right: ", right, "\n";
+
+    print "delta-left: ", left-curr, "; delta-right: ", right-curr, "\n";
+
+    if (abs(right) < abs(curr)) {
+
+      delta = 1 ;
+      power = 0 ;
+      tmp = root(x + delta);
+
+      while (same_polarity(curr,tmp)) {
+        power = power + 1 ;
+        delta = 2 ^ power ;
+        tmp = root(x + delta) ;
+      }
+
+      curr = tmp ;
+      x = x+ delta ;
+
+    } else if (abs(left) < abs(curr)) {
+
+
+      delta = 1 ;
+      power = 0 ;
+      tmp = root(x - delta);
+
+      while (same_polarity(curr,tmp)) {
+        power = power + 1 ;
+        delta = 2 ^ power ;
+        tmp = root(x - delta) ;
+      }
+
+      curr = tmp ;
+      x = x - delta ;
+
+    } else if (right == curr) {
+      /* We got stuck; nudge it. */
+      while (right == curr) {
+        right = root(x+1);
+        x = x+1; 
+      }
+      curr = right ;
+
+    } else if (left == curr) {
+      /* We got stuck; nudge it. */
+      while (left == curr) {
+        left = root(x-1);
+        x = x-1; 
+      }
+      curr = left ;
+
+    } else {
+      print "unhandled case";
+    }
+
+  }
+
+}
+
+solve() ;
+
+print "Part 2: ", x, "\n"
